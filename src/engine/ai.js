@@ -65,7 +65,8 @@ const IMAGE_SCHEMA = {
 // Same as the SDK's hybrid default; inCloudParams needs the model named explicitly.
 export const DEFAULT_CLOUD_MODEL = 'gemini-3.5-flash-lite';
 // If the cloud model is overloaded or missing, try the next one.
-const CLOUD_FALLBACKS = ['gemini-3.5-flash-lite', 'gemini-flash-lite-latest', 'gemini-3.1-flash-lite', 'gemini-3.8-flash', 'gemini-3.5-flash', 'gemini-flash-latest'];
+const CLOUD_FALLBACKS = ['gemini-3.5-flash-lite', 'gemini-flash-lite-latest', 'gemini-3.1-flash-lite', 'gemini-3.5-flash', 'gemini-flash-latest'];
+const CLOUD_TIMEOUT_MS = 25000; // per attempt; a stuck request moves on to the next model
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 /** Run a request; on a cloud-side 5xx/429/404, retry with the next cloud model. */
@@ -76,12 +77,12 @@ async function withCloudFallback(mode, kind, cloudModel, request) {
   for (const [i, name] of attempts.entries()) {
     if (i > 0) await sleep(1200);
     try {
-      const result = await model(mode, kind, name).generateContent(request);
+      const result = await model(mode, kind, name).generateContent(request, { timeout: CLOUD_TIMEOUT_MS });
       const source = result.response.inferenceSource || InferenceSource.IN_CLOUD;
       return { result, source, cloudModel: source === InferenceSource.IN_CLOUD ? name : null };
     } catch (e) {
       lastErr = e;
-      const retriable = /\[(500|502|503|504|429|404)|high demand|overloaded|not found|unavailable/i.test(String(e.message || e));
+      const retriable = /\[(500|502|503|504|429|404)|high demand|overloaded|not found|unavailable|timeout|timed out|abort/i.test(String(e.message || e));
       if (mode === InferenceMode.ONLY_ON_DEVICE || !retriable) throw e;
       console.warn(`[AdLint Pocket] ${name} failed, trying the next cloud model`, e.message);
     }
