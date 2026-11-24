@@ -34,17 +34,21 @@ def caption_file(i, text):
 def render(i, seg, assets):
     vo = seg.get('vo')
     vo_d = dur(vo) if vo else 0
-    cap = caption_file(i, seg.get('caption', ''))
-    draw = (f"drawtext=fontfile='{FONT}':textfile={cap}:fontcolor=white:fontsize=36:line_spacing=10:"
-            f"x=(w-text_w)/2:y={H - BAND + 22}:box=1:boxcolor=0x0f1115@0.85:boxborderw=18")
+    cap = f'cap_{i:02d}.png' if seg.get('caption') else None  # pre-rendered caption band (no drawtext needed)
     out = f'seg_{i:02d}.mp4'
     inputs, fc = [], []
     if 'image' in seg:
         D = max(seg.get('min', 0), vo_d + 0.8)
         inputs += ['-loop', '1', '-t', f'{D:.3f}', '-i', seg['image']]
         v = f"[0:v]scale={W}:{H}:force_original_aspect_ratio=decrease,pad={W}:{H}:(ow-iw)/2:(oh-ih)/2:color={BG},fps=30,format=yuv420p"
-        fc.append(v + (',' + draw if seg.get('caption') else '') + '[vout]')
         n = 1
+        if cap:
+            inputs += ['-i', cap]
+            fc.append(v + '[vb]')
+            fc.append(f'[vb][{n}:v]overlay=0:{H - BAND}:format=auto,format=yuv420p[vout]')
+            n += 1
+        else:
+            fc.append(v + '[vout]')
     else:
         crop = seg['crop']
         labels, vlen = [], 0.0
@@ -57,7 +61,10 @@ def render(i, seg, assets):
         n = len(seg['parts'])
         D = max(vlen, vo_d + 0.6, seg.get('min', 0))
         fc.append(''.join(labels) + f"concat=n={n}:v=1:a=0[vc]")
-        fc.append(f"[vc]tpad=stop_mode=clone:stop_duration={max(0.0, D - vlen):.3f},{draw}[vout]")
+        inputs += ['-i', cap]
+        fc.append(f"[vc]tpad=stop_mode=clone:stop_duration={max(0.0, D - vlen):.3f}[vp]")
+        fc.append(f'[vp][{n}:v]overlay=0:{H - BAND}:format=auto,format=yuv420p[vout]')
+        n += 1
     if vo:
         inputs += ['-i', vo]
         fc.append(f'[{n}:a]adelay=250|250,apad,atrim=0:{D:.3f}[aout]')
