@@ -1,0 +1,128 @@
+[
+ {
+  "image": "title.png",
+  "vo": "01_title.mp3",
+  "caption": "",
+  "min": 4.5
+ },
+ {
+  "parts": [
+   [
+    "take1",
+    4,
+    31,
+    2.4
+   ]
+  ],
+  "crop": "1280:900:174:30",
+  "vo": "02_rightclick.mp3",
+  "caption": "Agency ads are confidential until launch day. So instead of pasting a draft into a cloud chatbot, select it on any page, right-click, and check it with AdLint Pocket."
+ },
+ {
+  "parts": [
+   [
+    "take1",
+    31,
+    51,
+    1.2
+   ]
+  ],
+  "crop": "1280:900:174:30",
+  "vo": "03_rules.mp3",
+  "caption": "The rule pack runs instantly inside the extension: character limits for Facebook Feed, Instagram Stories and Google Search, plus risky claims. Every flag links to the official Meta, Google, F T C or A S A page it comes from."
+ },
+ {
+  "parts": [
+   [
+    "take1",
+    100,
+    136,
+    3.4
+   ]
+  ],
+  "crop": "1280:900:174:30",
+  "vo": "04_nano.mp3",
+  "caption": "Then Gemini Nano reviews the copy right here on the device, through Firebase AI Logic in prefer-on-device mode. The badge shows where it ran. (Nano takes about a minute on this Mac mini; sped up.)"
+ },
+ {
+  "parts": [
+   [
+    "take3",
+    133,
+    139,
+    1.0
+   ],
+   [
+    "take3",
+    222,
+    247,
+    2.5
+   ]
+  ],
+  "crop": "1200:916:22:52",
+  "vo": "05_implied.mp3",
+  "caption": "Keywords miss implied claims. Acne gone for good has no banned word, but Nano ties it to the right sourced rule and suggests a rewrite. Anything it can't tie to a source is dropped."
+ },
+ {
+  "parts": [
+   [
+    "take3",
+    256,
+    279,
+    2.5
+   ],
+   [
+    "take3",
+    343,
+    356,
+    1.5
+   ]
+  ],
+  "crop": "1200:916:22:52",
+  "vo": "06_image.mp3",
+  "caption": "Drop in an ad image. Size, ratio and the Stories safe zones are checked locally. Gemini Nano can also read the image on the device."
+ },
+ {
+  "parts": [
+   [
+    "take4",
+    18,
+    30,
+    1.0
+   ],
+   [
+    "take4",
+    96,
+    124,
+    2.0
+   ]
+  ],
+  "crop": "1200:916:22:52",
+  "vo": "07_cloud.mp3",
+  "caption": "Need a deeper look? The cloud check only runs after you say yes. Gemini in the cloud, through Firebase AI Logic with App Check enforced, maps every text block, and the extension applies Meta's exact margins."
+ },
+ {
+  "image": "appcheck.png",
+  "caption": "Firebase console: App Check is enforced for Firebase AI Logic (debug token for the extension).",
+  "min": 4.0
+ },
+ {
+  "parts": [
+   [
+    "take4",
+    124,
+    162,
+    2.5
+   ]
+  ],
+  "crop": "1200:916:22:52",
+  "vo": "08_never.mp3",
+  "caption": "For the strictest clients, one switch keeps everything on the device. Cloud buttons go grey, and AI calls run only on-device."
+ },
+ {
+  "image": "end.png",
+  "vo": "09_end.mp3",
+  "caption": "",
+  "min": 9
+ }
+]
