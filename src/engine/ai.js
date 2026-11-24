@@ -65,13 +65,16 @@ const IMAGE_SCHEMA = {
 // Same as the SDK's hybrid default; inCloudParams needs the model named explicitly.
 export const DEFAULT_CLOUD_MODEL = 'gemini-3.5-flash-lite';
 // If the cloud model is overloaded or missing, try the next one.
-const CLOUD_FALLBACKS = ['gemini-3.5-flash-lite', 'gemini-3.5-flash', 'gemini-flash-latest', 'gemini-2.5-flash'];
+const CLOUD_FALLBACKS = ['gemini-3.5-flash-lite', 'gemini-flash-lite-latest', 'gemini-3.1-flash-lite', 'gemini-3.8-flash', 'gemini-3.5-flash', 'gemini-flash-latest'];
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 /** Run a request; on a cloud-side 5xx/429/404, retry with the next cloud model. */
 async function withCloudFallback(mode, kind, cloudModel, request) {
   const chain = [...new Set([cloudModel || DEFAULT_CLOUD_MODEL, ...CLOUD_FALLBACKS])];
   let lastErr;
-  for (const name of chain) {
+  const attempts = chain.flatMap((name) => [name, name]); // each model gets one retry
+  for (const [i, name] of attempts.entries()) {
+    if (i > 0) await sleep(1200);
     try {
       const result = await model(mode, kind, name).generateContent(request);
       const source = result.response.inferenceSource || InferenceSource.IN_CLOUD;
