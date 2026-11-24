@@ -248,13 +248,13 @@ async function runCopyAi(box, aiAd, platforms, mode, found = []) {
   try {
     ensureFirebaseIfPossible();
     const r = await reviewCopy(pack, aiAd, platforms, mode, settings.cloudModel, found);
-    const grounded = groundAiFindings(pack, platforms, r.data.findings);
+    const grounded = groundAiFindings(pack, platforms, r.data.findings, Object.values(aiAd).join('\n'));
     const dropped = grounded.dropped;
     // Don't repeat what the rule pack already showed (same rule on the same words).
     const seen = new Set(found.map((f) => `${f.rule_id}|${(f.match || '').toLowerCase().trim()}`));
     const kept = grounded.kept.filter((f) => !seen.has(`${f.rule_id}|${f.excerpt.toLowerCase().trim()}`));
     box.innerHTML = '';
-    box.append(runHeader('AI review', r.source, `${r.ms} ms · ${sourceLabel(r.source, r.model)}${dropped.length ? ` · ${dropped.length} finding(s) dropped: no matching sourced rule` : ''}`));
+    box.append(runHeader('AI review', r.source, `${r.ms} ms · ${sourceLabel(r.source, r.model)}${dropped.length ? ` · ${dropped.length} finding(s) dropped: no matching sourced rule for this ad` : ''}`));
     if (r.data.summary) {
       const s = document.createElement('div');
       s.className = 'note';

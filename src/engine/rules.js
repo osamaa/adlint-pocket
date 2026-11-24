@@ -129,13 +129,15 @@ export function rulesFor(pack, platformIds) {
  * Keep only AI findings that cite a real rule for the chosen platforms.
  * "No source, no rule": anything else is dropped.
  */
-export function groundAiFindings(pack, platformIds, aiFindings) {
+export function groundAiFindings(pack, platformIds, aiFindings, adText = '') {
   const allowed = new Map(rulesFor(pack, platformIds).map((r) => [r.id, r]));
   const kept = [];
   const dropped = [];
   for (const f of aiFindings || []) {
     const rule = allowed.get(f.rule_id);
-    if (!rule) {
+    // Domain rules (loans, investments...) only apply when the ad is about that domain.
+    const offTopic = rule && rule.ai_requires && !new RegExp(rule.ai_requires, 'iu').test(adText);
+    if (!rule || offTopic) {
       dropped.push(f);
       continue;
     }

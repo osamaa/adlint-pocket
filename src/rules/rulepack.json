@@ -210,7 +210,8 @@
       "title": "Profanity, including masked spellings",
       "reason": "Meta bans profanity in ads, even when it's misspelled or hidden with symbols or emojis.",
       "source": "https://transparency.meta.com/policies/ad-standards/objectionable-content/profanity/",
-      "ai_hint": "swear words only"
+      "ai_hint": "swear words only",
+      "ai_requires": "."
     },
     {
       "id": "meta-guaranteed-investment-returns",
@@ -228,7 +229,8 @@
       "title": "Promises guaranteed or risk-free investment returns",
       "reason": "Meta treats investment offers with guaranteed or risk-free returns as scams.",
       "source": "https://transparency.meta.com/policies/community-standards/fraud-scams/",
-      "ai_hint": "only when the ad offers an investment or income"
+      "ai_hint": "only when the ad offers an investment or income",
+      "ai_requires": "\\b(invest\\w*|returns?|profits?|yield|crypto|trading|income|roi)\\b"
     },
     {
       "id": "meta-get-rich-quick",
@@ -246,7 +248,8 @@
       "title": "Big money for little effort",
       "reason": "Meta treats offers of unrealistic financial reward for minimal effort as get-rich-quick scams.",
       "source": "https://transparency.meta.com/policies/community-standards/fraud-scams/",
-      "ai_hint": "only when the ad promises money or income"
+      "ai_hint": "only when the ad promises money or income",
+      "ai_requires": "\\b(money|income|earn\\w*|cash|\\$|rich|profit\\w*)\\b"
     },
     {
       "id": "meta-guaranteed-loan-approval",
@@ -264,7 +267,8 @@
       "title": "Guaranteed loan approval",
       "reason": "Meta does not allow loan offers that guarantee approval without mentioning standard approval criteria.",
       "source": "https://transparency.meta.com/policies/community-standards/fraud-scams/",
-      "ai_hint": "only when the ad offers a loan or credit"
+      "ai_hint": "only when the ad offers a loan or credit",
+      "ai_requires": "\\b(loans?|credit|borrow\\w*|lend\\w*|mortgage|financ\\w*)\\b"
     },
     {
       "id": "meta-health-timeframe-promise",

@@ -96,3 +96,9 @@ test('safe zones use the platform numbers', () => {
   assert.equal(r.findings.length, 1);
   assert.match(r.findings[0].detail, /top 14%/);
 });
+
+test('domain rules need domain words in the ad', () => {
+  const f = [{ rule_id: 'meta-guaranteed-loan-approval', quote: 'Acne gone for good', why: 'x', fix: 'y' }];
+  assert.equal(groundAiFindings(pack, ['meta_facebook_feed'], f, 'Acne gone for good. Night oil.').kept.length, 0);
+  assert.equal(groundAiFindings(pack, ['meta_facebook_feed'], f, 'Guaranteed loan approval today').kept.length, 1);
+});
