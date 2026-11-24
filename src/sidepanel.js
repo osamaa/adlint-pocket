@@ -20,7 +20,15 @@ async function loadSettings() {
   const s = await chrome.storage.local.get(['settings']);
   settings = { ...settings, ...(s.settings || {}) };
   if (!settings.firebaseConfig && BUILD_DEFAULTS.firebase) settings.firebaseConfig = BUILD_DEFAULTS.firebase;
-  if (!settings.appCheckDebugToken) settings.appCheckDebugToken = BUILD_DEFAULTS.appCheckDebugToken || crypto.randomUUID();
+  // A token from your own build wins over an auto-generated one; one you typed in Settings wins over both.
+  if (BUILD_DEFAULTS.appCheckDebugToken && settings.tokenSource !== 'user') {
+    settings.appCheckDebugToken = BUILD_DEFAULTS.appCheckDebugToken;
+    settings.tokenSource = 'build';
+  }
+  if (!settings.appCheckDebugToken) {
+    settings.appCheckDebugToken = crypto.randomUUID();
+    settings.tokenSource = 'auto';
+  }
   if (!settings.cloudModel && BUILD_DEFAULTS.cloudModel) settings.cloudModel = BUILD_DEFAULTS.cloudModel;
   await chrome.storage.local.set({ settings });
   $('#s-never-cloud').checked = settings.neverCloud;
@@ -48,6 +56,7 @@ async function saveSettings() {
   }
   const changed = JSON.stringify(cfg) !== JSON.stringify(settings.firebaseConfig) || $('#s-token').value.trim() !== settings.appCheckDebugToken;
   settings.firebaseConfig = cfg;
+  if ($('#s-token').value.trim() !== settings.appCheckDebugToken) settings.tokenSource = 'user';
   settings.appCheckDebugToken = $('#s-token').value.trim();
   settings.cloudModel = $('#s-model').value.trim();
   settings.neverCloud = $('#s-never-cloud').checked;
@@ -204,7 +213,7 @@ $('#btn-check').addEventListener('click', async () => {
 
   const status = await deviceStatus('text');
   if (status === 'available') {
-    return runCopyAi(aiBox, aiAd, platforms, settings.neverCloud ? InferenceMode.ONLY_ON_DEVICE : InferenceMode.PREFER_ON_DEVICE);
+    return runCopyAi(aiBox, aiAd, platforms, settings.neverCloud ? InferenceMode.ONLY_ON_DEVICE : InferenceMode.PREFER_ON_DEVICE, res.findings);
   }
   if (settings.neverCloud) {
     aiBox.innerHTML = `<div class="note">AI review skipped: Gemini Nano is ${esc(label(status))}, and "never send to cloud" is on. The rule pack results above are complete.</div>`;
@@ -217,16 +226,16 @@ $('#btn-check').addEventListener('click', async () => {
   // Ask before falling back to the cloud.
   $('#consent-copy-status').textContent = label(status);
   $('#consent-copy').hidden = false;
-  pendingCloudCopy = { aiBox, aiAd, platforms };
+  pendingCloudCopy = { aiBox, aiAd, platforms, found: res.findings };
 });
 
 $('#btn-copy-cloud-yes').addEventListener('click', () => {
   $('#consent-copy').hidden = true;
   if (!pendingCloudCopy) return;
-  const { aiBox, aiAd, platforms } = pendingCloudCopy;
+  const { aiBox, aiAd, platforms, found } = pendingCloudCopy;
   pendingCloudCopy = null;
   // PREFER_ON_DEVICE: the SDK sees Nano isn't available and falls back to Gemini in the cloud.
-  runCopyAi(aiBox, aiAd, platforms, InferenceMode.PREFER_ON_DEVICE);
+  runCopyAi(aiBox, aiAd, platforms, InferenceMode.PREFER_ON_DEVICE, found);
 });
 $('#btn-copy-cloud-no').addEventListener('click', () => {
   $('#consent-copy').hidden = true;
@@ -234,12 +243,16 @@ $('#btn-copy-cloud-no').addEventListener('click', () => {
   pendingCloudCopy = null;
 });
 
-async function runCopyAi(box, aiAd, platforms, mode) {
+async function runCopyAi(box, aiAd, platforms, mode, found = []) {
   box.innerHTML = `<div class="run"><span class="spinner"></span> AI review (${mode === InferenceMode.ONLY_ON_DEVICE ? 'on this device only' : 'on-device first'})…</div>`;
   try {
     ensureFirebaseIfPossible();
-    const r = await reviewCopy(pack, aiAd, platforms, mode, settings.cloudModel);
-    const { kept, dropped } = groundAiFindings(pack, platforms, r.data.findings);
+    const r = await reviewCopy(pack, aiAd, platforms, mode, settings.cloudModel, found);
+    const grounded = groundAiFindings(pack, platforms, r.data.findings);
+    const dropped = grounded.dropped;
+    // Don't repeat what the rule pack already showed (same rule on the same words).
+    const seen = new Set(found.map((f) => `${f.rule_id}|${(f.match || '').toLowerCase().trim()}`));
+    const kept = grounded.kept.filter((f) => !seen.has(`${f.rule_id}|${f.excerpt.toLowerCase().trim()}`));
     box.innerHTML = '';
     box.append(runHeader('AI review', r.source, `${r.ms} ms · ${sourceLabel(r.source)}${dropped.length ? ` · ${dropped.length} finding(s) dropped: no matching sourced rule` : ''}`));
     if (r.data.summary) {

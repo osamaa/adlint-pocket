@@ -18,6 +18,7 @@ const COPY_SCHEMA = {
   properties: {
     findings: {
       type: 'array',
+      maxItems: 4,
       items: {
         type: 'object',
         properties: {
@@ -127,26 +128,28 @@ export async function downloadDeviceModel(onProgress) {
   return deviceStatus('text');
 }
 
-function copyPrompt(pack, ad, platformIds) {
+function copyPrompt(pack, ad, platformIds, alreadyFound = []) {
   const rules = rulesFor(pack, platformIds)
     .filter((r) => r.type === 'claim')
-    .map((r) => `- ${r.id}: ${r.title}. ${r.reason}`)
+    .map((r) => `- ${r.id}: ${r.title}`)
     .join('\n');
   const fields = ['primary_text', 'headline', 'description', 'path']
     .filter((f) => (ad[f] || '').trim())
     .map((f) => `${f}:\n${ad[f].trim()}`)
     .join('\n\n');
-  return `You review ad copy before launch. Platforms: ${platformIds.join(', ')}.
-Find wording that breaks one of these rules, including claims that are only implied (the user's own regex check already catches exact keywords, so look for meaning).
-Only use rule ids from this list. If nothing breaks a rule, return an empty findings list. Do not invent rules.
+  const known = alreadyFound.length
+    ? `\nALREADY FLAGGED BY THE KEYWORD CHECK (do not repeat these):\n${alreadyFound.map((f) => `- ${f.rule_id}: "${f.match || ''}"`).join('\n')}\n`
+    : '';
+  return `You are an ad compliance reviewer. A keyword check already ran. Your job: find claims it missed because they are implied or reworded (for example "acne gone forever" implies a cure; "never comes back" implies a guaranteed result).
+Use only rule ids from the list. Pick the rule that matches the meaning; skip anything that does not clearly match a rule. Return at most 4 findings, the most serious first. An empty list is fine.
 
 RULES
 ${rules}
-
+${known}
 AD COPY
 ${fields}
 
-For each problem give: rule_id, field, quote (the exact words from the ad), why (one short sentence), fix (a compliant rewrite of that line that keeps the offer). Then a one-sentence summary.`;
+For each finding: rule_id, field, quote (exact words from the ad), why (one short sentence), fix (a rewrite of that phrase that removes the claim; never add a new claim, guarantee or number). Then a one-sentence summary.`;
 }
 
 function parseJson(text) {
@@ -159,9 +162,9 @@ function parseJson(text) {
  * @param mode InferenceMode.PREFER_ON_DEVICE or ONLY_ON_DEVICE
  * @returns {Promise<{data, source, ms}>} source is 'on_device' | 'in_cloud'
  */
-export async function reviewCopy(pack, ad, platformIds, mode, cloudModel) {
+export async function reviewCopy(pack, ad, platformIds, mode, cloudModel, alreadyFound = []) {
   const t0 = performance.now();
-  const result = await model(mode, 'copy', cloudModel).generateContent(copyPrompt(pack, ad, platformIds));
+  const result = await model(mode, 'copy', cloudModel).generateContent(copyPrompt(pack, ad, platformIds, alreadyFound));
   const text = result.response.text();
   return { data: parseJson(text), source: result.response.inferenceSource || InferenceSource.IN_CLOUD, ms: Math.round(performance.now() - t0) };
 }
