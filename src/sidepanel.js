@@ -355,6 +355,10 @@ drop.addEventListener('drop', (e) => e.dataTransfer.files[0] && loadImage(e.data
 $('#f-image').addEventListener('change', (e) => e.target.files[0] && loadImage(e.target.files[0]));
 $$('input[name=iplatform]').forEach((i) => i.addEventListener('change', () => currentImage && runLocalImage()));
 $('#overlay-platform').addEventListener('change', drawPreview);
+$('#btn-sample-img').addEventListener('click', async () => {
+  const blob = await (await fetch(chrome.runtime.getURL('samples/glowberry-story.png'))).blob();
+  loadImage(new File([blob], 'glowberry-story.png', { type: 'image/png' }));
+});
 
 async function loadImage(file) {
   const bitmap = await createImageBitmap(file);

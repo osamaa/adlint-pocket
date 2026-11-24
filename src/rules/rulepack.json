@@ -192,7 +192,8 @@
       ],
       "title": "Says or implies something about the viewer's personal traits",
       "reason": "Meta ads must not assert or imply personal attributes such as race, religion, health, sexual orientation or financial status (e.g. 'Are you in debt?').",
-      "source": "https://transparency.meta.com/policies/ad-standards/objectionable-content/privacy-violations-personal-attributes/"
+      "source": "https://transparency.meta.com/policies/ad-standards/objectionable-content/privacy-violations-personal-attributes/",
+      "ai_hint": "asserting the viewer has a trait: race, religion, health condition, finances, sexuality"
     },
     {
       "id": "meta-profanity",
@@ -208,7 +209,8 @@
       ],
       "title": "Profanity, including masked spellings",
       "reason": "Meta bans profanity in ads, even when it's misspelled or hidden with symbols or emojis.",
-      "source": "https://transparency.meta.com/policies/ad-standards/objectionable-content/profanity/"
+      "source": "https://transparency.meta.com/policies/ad-standards/objectionable-content/profanity/",
+      "ai_hint": "swear words only"
     },
     {
       "id": "meta-guaranteed-investment-returns",
@@ -225,7 +227,8 @@
       ],
       "title": "Promises guaranteed or risk-free investment returns",
       "reason": "Meta treats investment offers with guaranteed or risk-free returns as scams.",
-      "source": "https://transparency.meta.com/policies/community-standards/fraud-scams/"
+      "source": "https://transparency.meta.com/policies/community-standards/fraud-scams/",
+      "ai_hint": "only when the ad offers an investment or income"
     },
     {
       "id": "meta-get-rich-quick",
@@ -242,7 +245,8 @@
       ],
       "title": "Big money for little effort",
       "reason": "Meta treats offers of unrealistic financial reward for minimal effort as get-rich-quick scams.",
-      "source": "https://transparency.meta.com/policies/community-standards/fraud-scams/"
+      "source": "https://transparency.meta.com/policies/community-standards/fraud-scams/",
+      "ai_hint": "only when the ad promises money or income"
     },
     {
       "id": "meta-guaranteed-loan-approval",
@@ -259,7 +263,8 @@
       ],
       "title": "Guaranteed loan approval",
       "reason": "Meta does not allow loan offers that guarantee approval without mentioning standard approval criteria.",
-      "source": "https://transparency.meta.com/policies/community-standards/fraud-scams/"
+      "source": "https://transparency.meta.com/policies/community-standards/fraud-scams/",
+      "ai_hint": "only when the ad offers a loan or credit"
     },
     {
       "id": "meta-health-timeframe-promise",
@@ -485,7 +490,8 @@
       ],
       "title": "Improbable result presented as typical",
       "reason": "Google's unreliable claims policy bans unrealistic weight-loss promises and promises of large financial return with minimal risk or effort.",
-      "source": "https://support.google.com/adspolicy/answer/15936857"
+      "source": "https://support.google.com/adspolicy/answer/15936857",
+      "ai_hint": "weight loss or money claims"
     },
     {
       "id": "google-guarantee-needs-refund-policy",

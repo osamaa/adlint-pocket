@@ -22,7 +22,7 @@ await build({
   logLevel: 'info',
 });
 
-for (const f of ['manifest.json', 'sidepanel.html', 'sidepanel.css', 'icons']) {
+for (const f of ['manifest.json', 'sidepanel.html', 'sidepanel.css', 'icons', 'samples']) {
   cpSync(`src/${f}`, `dist/${f}`, { recursive: true });
 }
 console.log(`dist/ ready${local.firebase ? ' (with local Firebase config)' : ''}. Load it at chrome://extensions > Load unpacked.`);

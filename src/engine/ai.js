@@ -155,7 +155,7 @@ export async function downloadDeviceModel(onProgress) {
 function copyPrompt(pack, ad, platformIds, alreadyFound = []) {
   const rules = rulesFor(pack, platformIds)
     .filter((r) => r.type === 'claim')
-    .map((r) => `- ${r.id}: ${r.title}`)
+    .map((r) => `- ${r.id}: ${r.title}${r.ai_hint ? ` (${r.ai_hint})` : ''}`)
     .join('\n');
   const fields = ['primary_text', 'headline', 'description', 'path']
     .filter((f) => (ad[f] || '').trim())
