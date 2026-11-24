@@ -61,6 +61,9 @@ const IMAGE_SCHEMA = {
   required: ['detected_text', 'text_coverage_percent', 'boxes', 'faces_cut_off', 'notes'],
 };
 
+// Same as the SDK's hybrid default; inCloudParams needs the model named explicitly.
+export const DEFAULT_CLOUD_MODEL = 'gemini-3.5-flash-lite';
+
 let state = null; // { app, ai, key }
 const cache = new Map();
 const hash = (s) => [...s].reduce((h, c) => (Math.imul(h, 31) + c.charCodeAt(0)) | 0, 7).toString(36).replace('-', 'n');
@@ -101,7 +104,7 @@ function model(mode, kind, cloudModel) {
       promptOptions: { responseConstraint: schema },
     },
     inCloudParams: {
-      ...(cloudModel ? { model: cloudModel } : {}),
+      model: cloudModel || DEFAULT_CLOUD_MODEL,
       generationConfig: { responseMimeType: 'application/json', responseJsonSchema: schema, temperature: 0.2 },
     },
   });
