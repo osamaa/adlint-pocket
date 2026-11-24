@@ -547,7 +547,7 @@
       "type": "claim",
       "severity": "info",
       "patterns": [
-        "\\bfree\\b"
+        "(?<![\\w-])free(?![\\w-])"
       ],
       "title": "'Free' offer: show the terms clearly",
       "reason": "US FTC: a 'free' offer tied to a purchase should clearly and conspicuously disclose its terms and conditions.",

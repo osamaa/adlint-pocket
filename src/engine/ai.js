@@ -64,6 +64,27 @@ const IMAGE_SCHEMA = {
 
 // Same as the SDK's hybrid default; inCloudParams needs the model named explicitly.
 export const DEFAULT_CLOUD_MODEL = 'gemini-3.5-flash-lite';
+// If the cloud model is overloaded or missing, try the next one.
+const CLOUD_FALLBACKS = ['gemini-3.5-flash-lite', 'gemini-3.5-flash', 'gemini-flash-latest', 'gemini-2.5-flash'];
+
+/** Run a request; on a cloud-side 5xx/429/404, retry with the next cloud model. */
+async function withCloudFallback(mode, kind, cloudModel, request) {
+  const chain = [...new Set([cloudModel || DEFAULT_CLOUD_MODEL, ...CLOUD_FALLBACKS])];
+  let lastErr;
+  for (const name of chain) {
+    try {
+      const result = await model(mode, kind, name).generateContent(request);
+      const source = result.response.inferenceSource || InferenceSource.IN_CLOUD;
+      return { result, source, cloudModel: source === InferenceSource.IN_CLOUD ? name : null };
+    } catch (e) {
+      lastErr = e;
+      const retriable = /\[(500|502|503|504|429|404)|high demand|overloaded|not found|unavailable/i.test(String(e.message || e));
+      if (mode === InferenceMode.ONLY_ON_DEVICE || !retriable) throw e;
+      console.warn(`[AdLint Pocket] ${name} failed, trying the next cloud model`, e.message);
+    }
+  }
+  throw lastErr;
+}
 
 let state = null; // { app, ai, key }
 const cache = new Map();
@@ -164,9 +185,8 @@ function parseJson(text) {
  */
 export async function reviewCopy(pack, ad, platformIds, mode, cloudModel, alreadyFound = []) {
   const t0 = performance.now();
-  const result = await model(mode, 'copy', cloudModel).generateContent(copyPrompt(pack, ad, platformIds, alreadyFound));
-  const text = result.response.text();
-  return { data: parseJson(text), source: result.response.inferenceSource || InferenceSource.IN_CLOUD, ms: Math.round(performance.now() - t0) };
+  const { result, source, cloudModel: used } = await withCloudFallback(mode, 'copy', cloudModel, copyPrompt(pack, ad, platformIds, alreadyFound));
+  return { data: parseJson(result.response.text()), source, model: used, ms: Math.round(performance.now() - t0) };
 }
 
 /** Read an image file into an inline-data part (JPEG/PNG; anything else is converted to JPEG). */
@@ -195,6 +215,6 @@ const IMAGE_PROMPT = `You check an ad image before launch. Look at the image and
 export async function reviewImage(file, mode, cloudModel) {
   const t0 = performance.now();
   const part = await fileToPart(file);
-  const result = await model(mode, 'image', cloudModel).generateContent([IMAGE_PROMPT, part]);
-  return { data: parseJson(result.response.text()), source: result.response.inferenceSource || InferenceSource.IN_CLOUD, ms: Math.round(performance.now() - t0) };
+  const { result, source, cloudModel: used } = await withCloudFallback(mode, 'image', cloudModel, [IMAGE_PROMPT, part]);
+  return { data: parseJson(result.response.text()), source, model: used, ms: Math.round(performance.now() - t0) };
 }

@@ -254,7 +254,7 @@ async function runCopyAi(box, aiAd, platforms, mode, found = []) {
     const seen = new Set(found.map((f) => `${f.rule_id}|${(f.match || '').toLowerCase().trim()}`));
     const kept = grounded.kept.filter((f) => !seen.has(`${f.rule_id}|${f.excerpt.toLowerCase().trim()}`));
     box.innerHTML = '';
-    box.append(runHeader('AI review', r.source, `${r.ms} ms · ${sourceLabel(r.source)}${dropped.length ? ` · ${dropped.length} finding(s) dropped: no matching sourced rule` : ''}`));
+    box.append(runHeader('AI review', r.source, `${r.ms} ms · ${sourceLabel(r.source, r.model)}${dropped.length ? ` · ${dropped.length} finding(s) dropped: no matching sourced rule` : ''}`));
     if (r.data.summary) {
       const s = document.createElement('div');
       s.className = 'note';
@@ -276,7 +276,7 @@ function ensureFirebaseIfPossible() {
   return initFirebase({ apiKey: 'on-device-only', projectId: 'adlint-pocket-local', appId: '1:0:web:0' }, settings.appCheckDebugToken);
 }
 
-const sourceLabel = (s) => (s === 'on_device' ? 'Gemini Nano, on this device' : s === 'in_cloud' ? 'Gemini in the cloud via Firebase' : s);
+const sourceLabel = (s, m) => (s === 'on_device' ? 'Gemini Nano, on this device' : s === 'in_cloud' ? `${m || 'Gemini'} in the cloud via Firebase` : s);
 
 function runHeader(title, kind, text) {
   const d = document.createElement('div');
@@ -397,11 +397,16 @@ function drawPreview() {
   const pid = $('#overlay-platform').value;
   const z = pid && pack.platforms[pid].image.safe_zone;
   if (z) {
-    g.fillStyle = 'rgba(255, 80, 80, 0.28)';
+    g.fillStyle = 'rgba(255, 60, 60, 0.38)';
     g.fillRect(0, 0, c.width, c.height * z.top);
     g.fillRect(0, c.height * (1 - z.bottom), c.width, c.height * z.bottom);
     g.fillRect(0, c.height * z.top, c.width * z.left, c.height * (1 - z.top - z.bottom));
     g.fillRect(c.width * (1 - z.right), c.height * z.top, c.width * z.right, c.height * (1 - z.top - z.bottom));
+    g.setLineDash([8, 6]);
+    g.strokeStyle = 'rgba(255, 80, 80, 0.9)';
+    g.lineWidth = 2;
+    g.strokeRect(c.width * z.left, c.height * z.top, c.width * (1 - z.left - z.right), c.height * (1 - z.top - z.bottom));
+    g.setLineDash([]);
   }
   for (const b of currentImage.boxes || []) {
     g.strokeStyle = b.kind === 'face' ? '#4ade80' : b.kind === 'logo' ? '#7c9cff' : '#ffd166';
@@ -449,7 +454,7 @@ function showImageAi(r) {
   const box = $('#image-ai');
   const platforms = selected('iplatform');
   box.innerHTML = '';
-  box.append(runHeader('AI image check', r.source, `${r.ms} ms · ${sourceLabel(r.source)}`));
+  box.append(runHeader('AI image check', r.source, `${r.ms} ms · ${sourceLabel(r.source, r.model)}`));
   // Safe zones: the model found the boxes, local code applies the platform's exact margins.
   const sz = checkSafeZones(pack, r.data.boxes, platforms);
   // Text inside the image goes through the same sourced copy rules.
