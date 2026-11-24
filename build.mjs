@@ -4,7 +4,7 @@
 import { build } from 'esbuild';
 import { cpSync, existsSync, mkdirSync, readFileSync, rmSync } from 'node:fs';
 
-const local = existsSync('local.config.json') ? JSON.parse(readFileSync('local.config.json', 'utf8')) : {};
+const local = !process.env.ADLINT_PUBLIC && existsSync('local.config.json') ? JSON.parse(readFileSync('local.config.json', 'utf8')) : {};
 
 rmSync('dist', { recursive: true, force: true });
 mkdirSync('dist', { recursive: true });

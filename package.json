@@ -4,7 +4,8 @@
   "description": "Chrome extension: check ad copy and images on-device with Gemini Nano via Firebase AI Logic hybrid inference; cloud only with consent.",
   "scripts": {
     "build": "node build.mjs",
-    "test": "node --test test/*.test.mjs"
+    "test": "node --test test/*.test.mjs",
+    "package": "ADLINT_PUBLIC=1 node build.mjs && python3 scripts/package.py && node build.mjs"
   },
   "license": "MIT",
   "dependencies": {

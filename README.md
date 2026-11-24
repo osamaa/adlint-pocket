@@ -64,11 +64,16 @@ result.response.inferenceSource; // 'on_device' | 'in_cloud' -> shown as a badge
 - **Copy review:** `PREFER_ON_DEVICE` (Nano first, cloud fallback only after consent) or `ONLY_ON_DEVICE` with the privacy switch on.
 - **Image check:** `ONLY_ON_DEVICE` (Nano multimodal) or `ONLY_IN_CLOUD` behind the consent box.
 - **Same JSON schema both ways:** `responseConstraint` on-device, `responseJsonSchema` in the cloud, so the UI doesn't care where it ran.
+- **Cloud resilience:** if the cloud model is overloaded, the extension retries and steps through a short list of Gemini Flash models; the badge names the model that answered.
 - **App Check** is on. Chrome extensions have no reCAPTCHA origin, so the extension uses an App Check **debug token** (accepted by the contest rules), registered in the Firebase console. The `CustomProvider` is a placeholder for a future production attestation.
 
 ## Setup
 
-Requirements: Chrome 139+ on desktop (macOS, Windows, Linux or ChromeOS) with enough free disk space for Gemini Nano, Node 20+.
+Requirements: Chrome 139+ on desktop (macOS, Windows, Linux or ChromeOS) with enough free disk space for Gemini Nano.
+
+**Quickest (no build):** download [`release/adlint-pocket-extension.zip`](release/adlint-pocket-extension.zip), unzip it, then `chrome://extensions` > Developer mode > **Load unpacked** > pick the unzipped folder. Skip to step 2 below.
+
+**From source** (Node 20+):
 
 ```bash
 git clone https://github.com/osamaa/adlint-pocket.git
@@ -93,7 +98,8 @@ npm run build   # writes dist/
 1. Ad copy tab > **Load example** > **Check copy**: the rule pack flags the lengths and claims, then Gemini Nano adds findings and rewrites.
 2. **Example 2** has no obvious keywords ("acne gone forever", "dermatologists are amazed"). The rule pack finds little; the on-device AI review catches the implied cure claim against the FTC health-claims rule.
 3. Ad image tab > drop `demo/glowberry-story.png` (made-up brand): spec check, safe-zone overlay, then the AI check.
-4. Settings > turn on **Never send anything to the cloud**: cloud buttons go grey and AI calls run `ONLY_ON_DEVICE`.
+4. Open `demo/landing.html` in Chrome, select the ad text, right-click > **Check with AdLint Pocket**: the side panel opens and checks it.
+5. Settings > turn on **Never send anything to the cloud**: cloud buttons go grey and AI calls run `ONLY_ON_DEVICE`.
 
 ## Rule pack
 
@@ -116,6 +122,8 @@ Everything in this repository was written during the #BuildHybridAI submission p
 - The rule engine (limits per placement, Google asset counts, CJK double-width counting, claim patterns, AI-finding grounding) and its tests.
 - The rule pack with 32 sourced rules for Facebook Feed, Instagram Stories and Google Search.
 - The image engine: spec checks, safe-zone geometry, model boxes drawn on the preview, OCR text run through the copy rules.
+
+Tested on a Mac mini (Apple silicon, Chrome 158) with Gemini Nano available on-device: rule pack, on-device copy review, on-device image review and the consented cloud image review (App Check enforced) all ran end to end. On that machine Nano takes about a minute per review; the rule pack is instant.
 
 Built with AI coding assistants (Claude Code), as the rules allow.
 
