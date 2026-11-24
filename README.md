@@ -22,7 +22,7 @@ AdLint Pocket splits the job:
 | AI image check: text, logos, faces, where they sit | Gemini Nano with image input (`ONLY_ON_DEVICE`) or, after a consent click, Gemini in the cloud (`ONLY_IN_CLOUD`) | Heavy vision work goes to the cloud only when you choose |
 | Safe-zone verdict | In the extension | The model only reports *where* things are; the extension applies each platform's exact margins |
 
-Every AI finding has to cite a rule id from the pack. Findings that don't match a sourced rule are dropped and counted. **No source, no rule.**
+Every AI finding has to cite a rule id from the pack. Findings that don't match a sourced rule are dropped and counted, and domain rules (loans, investments, income claims) are only accepted when the ad is actually about that domain. **No source, no rule.**
 
 ## Features
 
@@ -31,7 +31,7 @@ Every AI finding has to cite a rule id from the pack. Findings that don't match 
 - Pick placements: Facebook Feed, Instagram Stories, Google Search (responsive search ad).
 - Results as a fix / check / info / pass list. Each item shows what was found, the words that triggered it, the reason, the placements it applies to, a **Source** link, and for AI findings a suggested rewrite.
 - A badge on every run shows where it ran: *On this device · rule pack*, *On this device · Gemini Nano*, or *Cloud · Gemini via Firebase* (read from the SDK's `inferenceSource`).
-- Drop an ad image: instant spec check per placement, a safe-zone overlay (Stories: 14% top, 35% bottom, 6% sides; Google image assets: central 80%), then an AI check on-device or in the cloud. Text found in the image goes through the same sourced copy rules.
+- Drop an ad image (or click **Try the sample ad**): instant spec check per placement, a safe-zone overlay (Stories: 14% top, 35% bottom, 6% sides; Google image assets: central 80%), then an AI check on-device or in the cloud. Text found in the image goes through the same sourced copy rules.
 - **Never send anything to the cloud** switch. When it's on, AI calls use `ONLY_ON_DEVICE` and the cloud buttons are disabled.
 - Status pills: Gemini Nano state on this machine, and the cloud state (never / only with your OK / not set up).
 - A **Download / prepare Gemini Nano** button that calls the SDK's `initializeDeviceModel()` with a progress bar.
@@ -97,7 +97,7 @@ npm run build   # writes dist/
 
 1. Ad copy tab > **Load example** > **Check copy**: the rule pack flags the lengths and claims, then Gemini Nano adds findings and rewrites.
 2. **Example 2** has no obvious keywords ("acne gone forever", "dermatologists are amazed"). The rule pack finds little; the on-device AI review catches the implied cure claim against the FTC health-claims rule.
-3. Ad image tab > drop `demo/glowberry-story.png` (made-up brand): spec check, safe-zone overlay, then the AI check.
+3. Ad image tab > **Try the sample ad** (or drop `demo/glowberry-story.png`, a made-up brand): spec check, safe-zone overlay, then the AI check on-device or, after the consent box, in the cloud.
 4. Open `demo/landing.html` in Chrome, select the ad text, right-click > **Check with AdLint Pocket**: the side panel opens and checks it.
 5. Settings > turn on **Never send anything to the cloud**: cloud buttons go grey and AI calls run `ONLY_ON_DEVICE`.
 
