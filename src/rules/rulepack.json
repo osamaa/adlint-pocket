@@ -1,0 +1,634 @@
+{
+  "name": "AdLint Pocket starter rule pack",
+  "version": "2026.11.24",
+  "disclaimer": "Guidance, not legal advice. Platform policies change; always check the linked source before launch.",
+  "notes": "Every rule carries the official page it comes from. No source, no rule. Sources checked 24 Nov 2026.",
+  "platforms": {
+    "meta_facebook_feed": {
+      "label": "Meta: Facebook Feed",
+      "fields": {
+        "primary_text": {
+          "label": "Primary text",
+          "multi": false
+        },
+        "headline": {
+          "label": "Headline",
+          "multi": false
+        }
+      },
+      "image": {
+        "label": "Facebook Feed image",
+        "ratios": [
+          {
+            "name": "4:5",
+            "w": 4,
+            "h": 5,
+            "tolerance": 0.03
+          }
+        ],
+        "recommended": "1440 x 1800",
+        "min_width": 600,
+        "min_height": 750,
+        "types": [
+          "image/jpeg",
+          "image/png"
+        ],
+        "max_bytes": 31457280,
+        "safe_zone": null,
+        "source": "https://www.facebook.com/business/ads-guide/update/image/facebook-feed?locale=en_US"
+      }
+    },
+    "meta_instagram_stories": {
+      "label": "Meta: Instagram Stories",
+      "fields": {
+        "primary_text": {
+          "label": "Primary text",
+          "multi": false
+        }
+      },
+      "image": {
+        "label": "Instagram Stories image",
+        "ratios": [
+          {
+            "name": "9:16",
+            "w": 9,
+            "h": 16,
+            "tolerance": 0.01
+          }
+        ],
+        "recommended": "1440 x 2560",
+        "min_width": 500,
+        "min_height": 0,
+        "types": [
+          "image/jpeg",
+          "image/png"
+        ],
+        "max_bytes": 31457280,
+        "safe_zone": {
+          "top": 0.14,
+          "bottom": 0.35,
+          "left": 0.06,
+          "right": 0.06,
+          "rule": "meta-ig-stories-safe-zone"
+        },
+        "source": "https://www.facebook.com/business/ads-guide/update/image/instagram-story?locale=en_US"
+      }
+    },
+    "google_search_rsa": {
+      "label": "Google: Search ad (responsive)",
+      "fields": {
+        "headline": {
+          "label": "Headlines (one per line, 3 to 15)",
+          "multi": true
+        },
+        "description": {
+          "label": "Descriptions (one per line, 2 to 4)",
+          "multi": true
+        },
+        "path": {
+          "label": "Display path (one per line, up to 2)",
+          "multi": true
+        }
+      },
+      "image": {
+        "label": "Google Search image asset",
+        "ratios": [
+          {
+            "name": "1:1",
+            "w": 1,
+            "h": 1,
+            "tolerance": 0.01
+          },
+          {
+            "name": "1.91:1",
+            "w": 1.91,
+            "h": 1,
+            "tolerance": 0.02
+          }
+        ],
+        "recommended": "1200 x 1200 (1:1) or 1200 x 628 (1.91:1)",
+        "min_width": 300,
+        "min_height": 300,
+        "types": [
+          "image/jpeg",
+          "image/png"
+        ],
+        "max_bytes": 5242880,
+        "safe_zone": {
+          "top": 0.1,
+          "bottom": 0.1,
+          "left": 0.1,
+          "right": 0.1,
+          "rule": "google-image-center-80"
+        },
+        "source": "https://support.google.com/google-ads/answer/9566341"
+      }
+    }
+  },
+  "rules": [
+    {
+      "id": "meta-fb-feed-primary-text-length",
+      "platforms": [
+        "meta_facebook_feed"
+      ],
+      "field": "primary_text",
+      "type": "limit",
+      "max": 150,
+      "severity": "warn",
+      "title": "Primary text is longer than Meta recommends",
+      "reason": "Meta recommends 50-150 characters of primary text for Feed image ads. Longer text gets cut off behind 'See more'.",
+      "source": "https://www.facebook.com/business/ads-guide/update/image/facebook-feed?locale=en_US"
+    },
+    {
+      "id": "meta-fb-feed-headline-length",
+      "platforms": [
+        "meta_facebook_feed"
+      ],
+      "field": "headline",
+      "type": "limit",
+      "max": 27,
+      "severity": "warn",
+      "title": "Headline is longer than Meta recommends",
+      "reason": "Meta recommends a headline of 27 characters for Feed image ads.",
+      "source": "https://www.facebook.com/business/ads-guide/update/image/facebook-feed?locale=en_US"
+    },
+    {
+      "id": "meta-ig-stories-primary-text-length",
+      "platforms": [
+        "meta_instagram_stories"
+      ],
+      "field": "primary_text",
+      "type": "limit",
+      "max": 125,
+      "severity": "warn",
+      "title": "Primary text is longer than Meta recommends for Stories",
+      "reason": "Meta recommends 125 characters of primary text for Instagram Stories image ads.",
+      "source": "https://www.facebook.com/business/ads-guide/update/image/instagram-story?locale=en_US"
+    },
+    {
+      "id": "meta-ig-stories-safe-zone",
+      "platforms": [
+        "meta_instagram_stories"
+      ],
+      "field": "image",
+      "type": "image",
+      "severity": "warn",
+      "title": "Text or logo in the Stories safe zone",
+      "reason": "Meta suggests keeping roughly 14% of the top, 35% of the bottom and 6% of each side free of text and logos, because the Stories interface covers them.",
+      "source": "https://www.facebook.com/business/ads-guide/update/image/instagram-story?locale=en_US"
+    },
+    {
+      "id": "meta-personal-attributes",
+      "platforms": [
+        "meta_facebook_feed",
+        "meta_instagram_stories"
+      ],
+      "field": "any",
+      "type": "claim",
+      "severity": "fail",
+      "patterns": [
+        "\\b(are you|do you have|do you suffer from|meet other)\\b[^.?!]{0,30}\\b(gay|lesbian|christians?|muslims?|jewish|jews|buddhists?|hindus?|black|seniors?|diabet\\w*|depress\\w*|bankrupt|felons?|disabled|transgender|in debt|overweight|single moms?)\\b",
+        "\\b(depression|anxiety|diabetes|debt) getting you down\\b"
+      ],
+      "title": "Says or implies something about the viewer's personal traits",
+      "reason": "Meta ads must not assert or imply personal attributes such as race, religion, health, sexual orientation or financial status (e.g. 'Are you in debt?').",
+      "source": "https://transparency.meta.com/policies/ad-standards/objectionable-content/privacy-violations-personal-attributes/"
+    },
+    {
+      "id": "meta-profanity",
+      "platforms": [
+        "meta_facebook_feed",
+        "meta_instagram_stories"
+      ],
+      "field": "any",
+      "type": "claim",
+      "severity": "fail",
+      "patterns": [
+        "(\\$h[i1!]t|\\bf[\\*!%@#]{1,4}(k|ing)\\b|\\bsh[i1]tty\\b|\\bdamn\\b|\\bwtf\\b|🤬|🖕|💩)"
+      ],
+      "title": "Profanity, including masked spellings",
+      "reason": "Meta bans profanity in ads, even when it's misspelled or hidden with symbols or emojis.",
+      "source": "https://transparency.meta.com/policies/ad-standards/objectionable-content/profanity/"
+    },
+    {
+      "id": "meta-guaranteed-investment-returns",
+      "platforms": [
+        "meta_facebook_feed",
+        "meta_instagram_stories"
+      ],
+      "field": "any",
+      "type": "claim",
+      "severity": "fail",
+      "patterns": [
+        "\\b(guaranteed?|risk[- ]free)\\b[^.?!]{0,25}\\b(returns?|profits?|income|roi|yield)\\b",
+        "\\b(double|triple) your (money|investment|crypto)\\b"
+      ],
+      "title": "Promises guaranteed or risk-free investment returns",
+      "reason": "Meta treats investment offers with guaranteed or risk-free returns as scams.",
+      "source": "https://transparency.meta.com/policies/community-standards/fraud-scams/"
+    },
+    {
+      "id": "meta-get-rich-quick",
+      "platforms": [
+        "meta_facebook_feed",
+        "meta_instagram_stories"
+      ],
+      "field": "any",
+      "type": "claim",
+      "severity": "fail",
+      "patterns": [
+        "\\b(get rich quick|no effort|while you sleep|zero effort)\\b",
+        "\\bmake \\$?\\d[\\d,]*k?\\s*(a|per) (day|week|month)\\b"
+      ],
+      "title": "Big money for little effort",
+      "reason": "Meta treats offers of unrealistic financial reward for minimal effort as get-rich-quick scams.",
+      "source": "https://transparency.meta.com/policies/community-standards/fraud-scams/"
+    },
+    {
+      "id": "meta-guaranteed-loan-approval",
+      "platforms": [
+        "meta_facebook_feed",
+        "meta_instagram_stories"
+      ],
+      "field": "any",
+      "type": "claim",
+      "severity": "fail",
+      "patterns": [
+        "\\bguaranteed? (loan |credit )?approval\\b",
+        "\\bapproved,? no credit check\\b"
+      ],
+      "title": "Guaranteed loan approval",
+      "reason": "Meta does not allow loan offers that guarantee approval without mentioning standard approval criteria.",
+      "source": "https://transparency.meta.com/policies/community-standards/fraud-scams/"
+    },
+    {
+      "id": "meta-health-timeframe-promise",
+      "platforms": [
+        "meta_facebook_feed",
+        "meta_instagram_stories"
+      ],
+      "field": "any",
+      "type": "claim",
+      "severity": "fail",
+      "patterns": [
+        "\\b(lose|drop|burn|shed)\\b[^.?!]{0,20}\\d+\\s*(lbs?|pounds|kg|kilos?)\\b[^.?!]{0,15}\\b(in|within)\\s*\\d+\\s*(days?|weeks?)\\b",
+        "\\b(clear|glowing|perfect) skin in \\d+ (days?|weeks?)\\b"
+      ],
+      "title": "Promises a health result within a set time",
+      "reason": "Meta health and wellness ads can't promise specific outcomes within a set timeframe without qualifiers.",
+      "source": "https://transparency.meta.com/policies/ad-standards/restricted-goods-services/health-wellness/"
+    },
+    {
+      "id": "meta-health-sensational",
+      "platforms": [
+        "meta_facebook_feed",
+        "meta_instagram_stories"
+      ],
+      "field": "any",
+      "type": "claim",
+      "severity": "warn",
+      "patterns": [
+        "\\b(miracle|shocking results|doctors hate|melts? (belly )?fat|instant(ly)? results?)\\b"
+      ],
+      "title": "Sensational health language",
+      "reason": "Meta health and wellness ads can't use sensational language with exaggerated or extreme claims.",
+      "source": "https://transparency.meta.com/policies/ad-standards/restricted-goods-services/health-wellness/"
+    },
+    {
+      "id": "meta-negative-self-perception",
+      "platforms": [
+        "meta_facebook_feed",
+        "meta_instagram_stories"
+      ],
+      "field": "any",
+      "type": "claim",
+      "severity": "fail",
+      "patterns": [
+        "\\b(ugly|flabby|disgusting|embarrassing|gross)\\b[^.?!]{0,20}\\b(belly|thighs|skin|body|arms|teeth|hair)\\b"
+      ],
+      "title": "Puts down how the viewer looks",
+      "reason": "Meta health and beauty ads can't contain statements of inferiority about physical appearance.",
+      "source": "https://transparency.meta.com/policies/ad-standards/restricted-goods-services/health-wellness/"
+    },
+    {
+      "id": "google-rsa-headline-length",
+      "platforms": [
+        "google_search_rsa"
+      ],
+      "field": "headline",
+      "type": "limit",
+      "max": 30,
+      "severity": "fail",
+      "title": "Headline over 30 characters",
+      "reason": "Responsive search ad headlines support up to 30 characters each.",
+      "source": "https://support.google.com/google-ads/answer/7684791"
+    },
+    {
+      "id": "google-rsa-description-length",
+      "platforms": [
+        "google_search_rsa"
+      ],
+      "field": "description",
+      "type": "limit",
+      "max": 90,
+      "severity": "fail",
+      "title": "Description over 90 characters",
+      "reason": "Responsive search ad descriptions support up to 90 characters each.",
+      "source": "https://support.google.com/google-ads/answer/7684791"
+    },
+    {
+      "id": "google-rsa-path-length",
+      "platforms": [
+        "google_search_rsa"
+      ],
+      "field": "path",
+      "type": "limit",
+      "max": 15,
+      "severity": "fail",
+      "title": "Display path over 15 characters",
+      "reason": "Each display path field supports up to 15 characters.",
+      "source": "https://support.google.com/google-ads/answer/7684791"
+    },
+    {
+      "id": "google-rsa-asset-count",
+      "platforms": [
+        "google_search_rsa"
+      ],
+      "field": "any",
+      "type": "count",
+      "counts": {
+        "headline": [
+          3,
+          15
+        ],
+        "description": [
+          2,
+          4
+        ],
+        "path": [
+          0,
+          2
+        ]
+      },
+      "severity": "fail",
+      "title": "Wrong number of headlines, descriptions or paths",
+      "reason": "A responsive search ad takes 3 to 15 headlines and 2 to 4 descriptions.",
+      "source": "https://support.google.com/google-ads/answer/7684791"
+    },
+    {
+      "id": "google-excessive-capitalization",
+      "platforms": [
+        "google_search_rsa"
+      ],
+      "field": "any",
+      "type": "claim",
+      "severity": "fail",
+      "patterns": [
+        "\\b(?!(?:ASAP|FAQ|USA|UAE|UK|EU|USB|LED|SUV|CEO|SEO|SaaS|NYC|PDF|API|DIY|VIP|HTML|AI|TV|PC)\\b)[A-Z]{4,}\\b",
+        "\\b(?:[a-z][A-Z]){2,}[a-zA-Z]*\\b"
+      ],
+      "title": "All caps or gimmicky capitals",
+      "reason": "Google Ads does not allow excessive or gimmicky capitalization such as 'FREE' or 'FlOwErS' (abbreviations and brand names are fine).",
+      "source": "https://support.google.com/adspolicy/answer/14848295?hl=en",
+      "flags": "gu"
+    },
+    {
+      "id": "google-repeated-punctuation",
+      "platforms": [
+        "google_search_rsa"
+      ],
+      "field": "any",
+      "type": "claim",
+      "severity": "fail",
+      "patterns": [
+        "([!?*$#@%&])\\1+"
+      ],
+      "title": "Repeated punctuation or symbols",
+      "reason": "Google Ads does not allow the same punctuation or symbol twice in a row, like 'flowers!!'.",
+      "source": "https://support.google.com/adspolicy/answer/14847994"
+    },
+    {
+      "id": "google-symbol-substitution",
+      "platforms": [
+        "google_search_rsa"
+      ],
+      "field": "any",
+      "type": "claim",
+      "severity": "fail",
+      "patterns": [
+        "\\b[a-z]+[@$][a-z]+\\b",
+        "\\b[a-z]+[01][a-z]{2,}\\b",
+        "\\b([A-Za-z]\\.){3,}"
+      ],
+      "title": "Symbols or numbers used in place of letters",
+      "reason": "Google Ads does not allow symbols, numbers or letters that don't keep their true meaning, like 'f1owers' or 'fl@wers'.",
+      "source": "https://support.google.com/adspolicy/answer/14847994"
+    },
+    {
+      "id": "google-no-emoji",
+      "platforms": [
+        "google_search_rsa"
+      ],
+      "field": "any",
+      "type": "claim",
+      "severity": "fail",
+      "patterns": [
+        "\\p{Extended_Pictographic}"
+      ],
+      "title": "Emoji in a search ad",
+      "reason": "Google Ads lists emoji as invalid or unsupported characters.",
+      "source": "https://support.google.com/adspolicy/answer/14847994"
+    },
+    {
+      "id": "google-gimmicky-spacing",
+      "platforms": [
+        "google_search_rsa"
+      ],
+      "field": "any",
+      "type": "claim",
+      "severity": "fail",
+      "patterns": [
+        "\\S {2,}\\S",
+        "\\b(?:\\w ){3,}\\w\\b"
+      ],
+      "title": "Extra or gimmicky spaces",
+      "reason": "Google Ads does not allow omitting spaces or adding extra spaces (e.g. 'F R E E').",
+      "source": "https://support.google.com/adspolicy/answer/6021546"
+    },
+    {
+      "id": "google-clickbait",
+      "platforms": [
+        "google_search_rsa"
+      ],
+      "field": "any",
+      "type": "claim",
+      "severity": "fail",
+      "patterns": [
+        "\\b(you won'?t believe|shocking|one (weird )?trick|secret (they|doctors|banks))\\b"
+      ],
+      "title": "Clickbait or sensational wording",
+      "reason": "Google does not allow ads that use clickbait tactics or sensationalist text to drive traffic.",
+      "source": "https://support.google.com/adspolicy/answer/6020955"
+    },
+    {
+      "id": "google-improbable-results",
+      "platforms": [
+        "google_search_rsa"
+      ],
+      "field": "any",
+      "type": "claim",
+      "severity": "fail",
+      "patterns": [
+        "\\b(lose|drop|shed)\\b[^.?!]{0,20}\\d+\\s*(lbs?|pounds|kg)\\b[^.?!]{0,20}\\b(days?|weeks?|month)\\b",
+        "\\b(eat whatever you want|without (diet|dieting|exercise))\\b",
+        "\\b(get rich quick|guaranteed? (returns?|profits?)|risk[- ]free (investment|returns?))\\b"
+      ],
+      "title": "Improbable result presented as typical",
+      "reason": "Google's unreliable claims policy bans unrealistic weight-loss promises and promises of large financial return with minimal risk or effort.",
+      "source": "https://support.google.com/adspolicy/answer/15936857"
+    },
+    {
+      "id": "google-guarantee-needs-refund-policy",
+      "platforms": [
+        "google_search_rsa"
+      ],
+      "field": "any",
+      "type": "claim",
+      "severity": "warn",
+      "patterns": [
+        "\\bguarantee(d|s)?\\b"
+      ],
+      "title": "Guarantee needs a clear refund policy",
+      "reason": "If you guarantee certain results, Google requires a clear and easily accessible refund (money-back) policy on the landing page.",
+      "source": "https://support.google.com/adspolicy/answer/15936857"
+    },
+    {
+      "id": "ftc-claim-substantiation",
+      "platforms": [
+        "meta_facebook_feed",
+        "meta_instagram_stories",
+        "google_search_rsa"
+      ],
+      "field": "any",
+      "type": "claim",
+      "severity": "warn",
+      "patterns": [
+        "\\b(clinically proven|proven to|scientifically proven|100% (effective|natural|safe)|\\d+% (more|better|faster|cheaper)|\\d+x (faster|better|more))\\b"
+      ],
+      "title": "Objective claim needs proof before the ad runs",
+      "reason": "US FTC: advertisers must have proof for objective claims before the ad runs.",
+      "source": "https://www.ftc.gov/business-guidance/resources/advertising-faqs-guide-small-business"
+    },
+    {
+      "id": "ftc-health-claims-evidence",
+      "platforms": [
+        "meta_facebook_feed",
+        "meta_instagram_stories",
+        "google_search_rsa"
+      ],
+      "field": "any",
+      "type": "claim",
+      "severity": "warn",
+      "patterns": [
+        "\\b(cures?|treats?|prevents?|heals?|boosts? (your )?immun\\w*|burns? fat|detox(es|ify)?)\\b"
+      ],
+      "title": "Health claim needs scientific evidence",
+      "reason": "US FTC: ads that make health or safety claims must be supported by competent and reliable scientific evidence.",
+      "source": "https://www.ftc.gov/business-guidance/resources/advertising-faqs-guide-small-business"
+    },
+    {
+      "id": "ftc-free-offer-terms",
+      "platforms": [
+        "meta_facebook_feed",
+        "meta_instagram_stories",
+        "google_search_rsa"
+      ],
+      "field": "any",
+      "type": "claim",
+      "severity": "info",
+      "patterns": [
+        "\\bfree\\b"
+      ],
+      "title": "'Free' offer: show the terms clearly",
+      "reason": "US FTC: a 'free' offer tied to a purchase should clearly and conspicuously disclose its terms and conditions.",
+      "source": "https://www.ftc.gov/business-guidance/resources/advertising-faqs-guide-small-business"
+    },
+    {
+      "id": "asa-superlative-claims",
+      "platforms": [
+        "meta_facebook_feed",
+        "meta_instagram_stories",
+        "google_search_rsa"
+      ],
+      "field": "any",
+      "type": "claim",
+      "severity": "warn",
+      "patterns": [
+        "(#1\\b|\\b(the best|best in|number one|no\\.? ?1|cheapest|fastest|leading|top[- ]rated|unbeatable|world'?s first)\\b)"
+      ],
+      "title": "Unqualified 'best' or '#1' claim",
+      "reason": "UK ASA/CAP: unqualified superlatives are treated as comparative claims against all competitors and need evidence.",
+      "source": "https://www.asa.org.uk/type/non_broadcast/code_section/03.html"
+    },
+    {
+      "id": "asa-false-urgency",
+      "platforms": [
+        "meta_facebook_feed",
+        "meta_instagram_stories",
+        "google_search_rsa"
+      ],
+      "field": "any",
+      "type": "claim",
+      "severity": "warn",
+      "patterns": [
+        "\\b(today only|last chance|ends (tonight|today|soon)|limited time( only)?|only \\d+ left|closing down|act now)\\b"
+      ],
+      "title": "Urgency claim must be true",
+      "reason": "UK ASA/CAP: marketers must not falsely state that a product or its terms are available only for a limited time.",
+      "source": "https://www.asa.org.uk/type/non_broadcast/code_section/03.html"
+    },
+    {
+      "id": "asa-guarantee-wording",
+      "platforms": [
+        "meta_facebook_feed",
+        "meta_instagram_stories"
+      ],
+      "field": "any",
+      "type": "claim",
+      "severity": "warn",
+      "patterns": [
+        "\\b(guaranteed?|100% guarantee|lifetime guarantee)\\b"
+      ],
+      "title": "'Guarantee' wording needs care",
+      "reason": "UK ASA/CAP: the word 'guarantee' must not cause confusion about consumer rights or hide significant limitations.",
+      "source": "https://www.asa.org.uk/type/non_broadcast/code_section/03.html"
+    },
+    {
+      "id": "google-image-center-80",
+      "platforms": [
+        "google_search_rsa"
+      ],
+      "field": "image",
+      "type": "image",
+      "severity": "warn",
+      "title": "Key content outside the central 80%",
+      "reason": "Google recommends putting important content in the center 80% of the image, because images can be cropped.",
+      "source": "https://support.google.com/google-ads/answer/9566341"
+    },
+    {
+      "id": "image-spec",
+      "platforms": [
+        "meta_facebook_feed",
+        "meta_instagram_stories",
+        "google_search_rsa"
+      ],
+      "field": "image",
+      "type": "image",
+      "severity": "fail",
+      "title": "Image size, ratio or file type off-spec",
+      "reason": "Each placement has a recommended ratio, minimum size and file types in the platform's ads guide.",
+      "source": "See each placement's ads guide link",
+      "source_from": "placement"
+    }
+  ]
+}

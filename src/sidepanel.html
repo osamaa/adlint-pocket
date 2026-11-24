@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>AdLint Pocket</title>
+  <link rel="stylesheet" href="sidepanel.css" />
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <img src="icons/icon48.png" alt="" width="28" height="28" />
+      <div>
+        <h1>AdLint Pocket</h1>
+        <p class="tag">Check ads on your own device before launch</p>
+      </div>
+    </div>
+    <div class="pills">
+      <span id="pill-device" class="pill">Gemini Nano: checking…</span>
+      <span id="pill-cloud" class="pill">Cloud: …</span>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" data-tab="copy" class="active">Ad copy</button>
+    <button role="tab" data-tab="image">Ad image</button>
+    <button role="tab" data-tab="settings">Settings</button>
+  </nav>
+
+  <main>
+    <!-- COPY -->
+    <section id="tab-copy" class="tab active">
+      <fieldset class="platforms">
+        <legend>Placements</legend>
+        <label><input type="checkbox" name="platform" value="meta_facebook_feed" checked /> Facebook Feed</label>
+        <label><input type="checkbox" name="platform" value="meta_instagram_stories" checked /> Instagram Stories</label>
+        <label><input type="checkbox" name="platform" value="google_search_rsa" checked /> Google Search ad</label>
+      </fieldset>
+
+      <div class="field" data-for="meta">
+        <label for="f-primary">Primary text <small>(Meta)</small> <span class="count" data-count="f-primary"></span></label>
+        <textarea id="f-primary" rows="4" placeholder="Paste the ad's main text, or select text on any page and right-click > Check with AdLint Pocket"></textarea>
+      </div>
+      <div class="field" data-for="meta_facebook_feed">
+        <label for="f-meta-headline">Headline <small>(Facebook Feed)</small> <span class="count" data-count="f-meta-headline"></span></label>
+        <input id="f-meta-headline" type="text" />
+      </div>
+      <div class="field" data-for="google_search_rsa">
+        <label for="f-g-headlines">Headlines <small>(Google, one per line, 3-15)</small></label>
+        <textarea id="f-g-headlines" rows="4"></textarea>
+      </div>
+      <div class="field" data-for="google_search_rsa">
+        <label for="f-g-descriptions">Descriptions <small>(Google, one per line, 2-4)</small></label>
+        <textarea id="f-g-descriptions" rows="3"></textarea>
+      </div>
+      <div class="field" data-for="google_search_rsa">
+        <label for="f-g-paths">Display paths <small>(Google, one per line, up to 2)</small></label>
+        <textarea id="f-g-paths" rows="2"></textarea>
+      </div>
+
+      <div class="actions">
+        <button id="btn-check" class="primary">Check copy</button>
+        <button id="btn-example" class="ghost">Load example</button>
+        <button id="btn-example2" class="ghost">Example 2</button>
+        <button id="btn-clear" class="ghost">Clear</button>
+      </div>
+
+      <div id="consent-copy" class="consent" hidden>
+        <p><strong>Gemini Nano isn't ready on this device</strong> (<span id="consent-copy-status"></span>). The rule pack check already ran locally.</p>
+        <p>Send this ad copy to Gemini in the cloud (through Firebase AI Logic) for the AI review?</p>
+        <div class="actions">
+          <button id="btn-copy-cloud-yes" class="warn">Yes, send the copy</button>
+          <button id="btn-copy-cloud-no" class="ghost">No, keep it local</button>
+        </div>
+      </div>
+
+      <div id="results-copy" class="results"></div>
+    </section>
+
+    <!-- IMAGE -->
+    <section id="tab-image" class="tab">
+      <fieldset class="platforms">
+        <legend>Placements</legend>
+        <label><input type="checkbox" name="iplatform" value="meta_facebook_feed" checked /> Facebook Feed</label>
+        <label><input type="checkbox" name="iplatform" value="meta_instagram_stories" checked /> Instagram Stories</label>
+        <label><input type="checkbox" name="iplatform" value="google_search_rsa" /> Google image asset</label>
+      </fieldset>
+
+      <label id="drop" class="drop" for="f-image">
+        <input id="f-image" type="file" accept="image/png,image/jpeg,image/webp" hidden />
+        <span id="drop-text">Drop an ad image here, or click to pick one</span>
+        <div id="preview-wrap" hidden>
+          <canvas id="preview"></canvas>
+        </div>
+      </label>
+      <div class="overlay-pick" id="overlay-pick" hidden>
+        Safe-zone overlay:
+        <select id="overlay-platform"></select>
+      </div>
+
+      <div class="actions">
+        <button id="btn-img-device" class="primary" disabled>AI check on this device</button>
+        <button id="btn-img-cloud" class="warn" disabled>Deep check in the cloud…</button>
+      </div>
+
+      <div id="consent-image" class="consent" hidden>
+        <p><strong>Send this image to the cloud?</strong></p>
+        <p>The image goes to Google's Gemini through Firebase AI Logic for a deeper check (text, logos, faces, safe zones). Your ad copy is not sent. Nothing leaves this device until you click Yes.</p>
+        <div class="actions">
+          <button id="btn-img-cloud-yes" class="warn">Yes, send this image</button>
+          <button id="btn-img-cloud-no" class="ghost">Cancel</button>
+        </div>
+      </div>
+
+      <div id="results-image" class="results"></div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section id="tab-settings" class="tab">
+      <div class="setting big">
+        <label class="switch">
+          <input type="checkbox" id="s-never-cloud" />
+          <span>Never send anything to the cloud</span>
+        </label>
+        <p class="hint">On: AI checks run only on this device with Gemini Nano (Firebase AI Logic <code>ONLY_ON_DEVICE</code>). Cloud buttons are disabled. Off: on-device first, cloud only after you say yes.</p>
+      </div>
+
+      <div class="setting">
+        <h3>Gemini Nano on this device</h3>
+        <p>Text: <b id="s-nano-text">…</b> · Image input: <b id="s-nano-image">…</b></p>
+        <button id="btn-download" class="ghost">Download / prepare Gemini Nano</button>
+        <progress id="dl-progress" max="1" value="0" hidden></progress>
+        <p class="hint">Needs Chrome 139+ on desktop. If it says "no-api", enable chrome://flags/#prompt-api-for-gemini-nano and #prompt-api-for-gemini-nano-multimodal-input, then restart Chrome.</p>
+      </div>
+
+      <div class="setting">
+        <h3>Firebase project (for the cloud fallback)</h3>
+        <label for="s-config">Firebase web app config (JSON)</label>
+        <textarea id="s-config" rows="7" placeholder='{"apiKey":"…","authDomain":"…","projectId":"…","appId":"…"}'></textarea>
+        <label for="s-token">App Check debug token</label>
+        <input id="s-token" type="text" spellcheck="false" />
+        <p class="hint">Register this token in Firebase console > App Check > Apps > Manage debug tokens. Keep it private.</p>
+        <label for="s-model">Cloud model (optional)</label>
+        <input id="s-model" type="text" placeholder="SDK default" />
+        <div class="actions"><button id="btn-save" class="primary">Save</button> <span id="save-msg"></span></div>
+      </div>
+
+      <div class="setting">
+        <h3>Rule pack</h3>
+        <p id="s-pack"></p>
+        <p class="hint">Every rule links to the official page it comes from. No source, no rule.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>Guidance, not legal advice. Check the linked source before launch.</footer>
+  <script type="module" src="sidepanel.js"></script>
+</body>
+</html>

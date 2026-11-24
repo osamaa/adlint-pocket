@@ -1,0 +1,8 @@
+node_modules/
+dist/
+*.zip
+local.config.json
+.env*
+demo/raw/
+STATUS.md
+.DS_Store
